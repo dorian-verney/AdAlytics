@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.svelte';
+import MainPage from '../components/main_page/MainPage.svelte';
+---
+
+<Layout>
+	<Header />
+	<div class="min-h-screen bg-linear-to-b from-purple-200/30
+	          to-purple-50/30 p-6 md:p-12 text-gray-800">
+		<MainPage client:load/> 
+	</div>
+</Layout>

@@ -1,0 +1,44 @@
+# back
+
+# Python-generated files
+**__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+*.venv/
+
+# macOS-specific files
+.DS_Store
+
+
+
+# front
+
+# build output
+*dist/
+
+# generated types
+*.astro/
+
+# dependencies
+*node_modules/
+
+# logs
+*npm-debug.log*
+*yarn-debug.log*
+*yarn-error.log*
+*pnpm-debug.log*
+
+# environment variables
+*.env
+*.env.production
+
+# macOS-specific files
+*.DS_Store
+
+# jetbrains setting folder
+*.idea/
