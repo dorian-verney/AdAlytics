@@ -1,34 +1,22 @@
 <script>
     import Button from './Button.svelte';
+    import { onMount } from 'svelte';
     let loading = false;
     let inputText = "";
     let additionalText = "";
+    import { initWebSocket, sendText, getWebSocketUrl } from "../utils/websockets.js";
+    
+    onMount(() => {
+        const wsUrl = getWebSocketUrl();
+        console.log("TextInput mounted - WS URL: ", wsUrl);
+        // Initialize WebSocket connection (no callback needed - this component only sends)
+        initWebSocket(wsUrl);
+    });
 
-    async function handleClick() {
-        loading = true;
-        
-        try {
-            const response = await fetch('/api/stream', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: inputText,
-                    additional_context: additionalText
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-        } catch (error) {
-            console.error('Error sending text to server:', error);
-        } finally {
-            loading = false;
-        }
+    // On button click
+    function handleClickWs() {
+        console.log("Sending text to server", inputText);
+        sendText(inputText, additionalText);
     }
 
 </script>
@@ -55,7 +43,7 @@
                    focus:border-transparent text-sm resize-y h-16 min-h-16"
         ></textarea>
         <!-- Pass the loading prop to child -->
-        <Button {loading} on:click={handleClick}>
+        <Button {loading} on:click={handleClickWs}>
             Inspect
         </Button>
     </div>

@@ -4,24 +4,54 @@
     import TextTab from './TextTab.svelte';
     import ScoreTab from './ScoreTab.svelte';
     import SuggestionsTab from './SuggestionsTab.svelte';
+    import { onMount, onDestroy } from 'svelte';
+    import { initWebSocket, subscribe, getWebSocketUrl } from "../utils/websockets.js";
+    let unsubscribe = null;
     
     let selectedTab = "text";
-    let tabText = "";
+    let textSummary = "";
+    let scores = [];
     let engagementScore = 75;
     let sentimentScore = 82;
     let explainabilityScore = 68;
     let suggestions = "";
-    
+
     function handleTabChange(tab) {
         selectedTab = tab;
     }
     
-    function handleTextChange(value) {
-        tabText = value;
-    }
-    
-    function handleSuggestionsChange(value) {
-        suggestions = value;
+    onMount(() => {
+        const wsUrl = getWebSocketUrl();
+        // Initialize WebSocket if not already initialized
+        initWebSocket(wsUrl);
+        // Subscribe to messages
+        unsubscribe = subscribe((predictionData) => {
+            console.log("Received prediction from TextTab: ", predictionData);
+            assignPredData(predictionData);
+        });
+    });
+
+    onDestroy(() => {
+        // Clean up subscription when component unmounts
+        if (unsubscribe) {
+            unsubscribe();
+        }
+    });
+
+
+    function assignPredData(predictionData) {
+        if (predictionData.prediction) {
+            let pred = predictionData.prediction;
+            if (pred.text) {
+                textSummary = pred.text;
+            }
+            if (pred.scores) {
+                scores = pred.scores;
+            }
+            if (pred.suggestions) {
+                suggestions = pred.suggestions;
+            }
+        }
     }
     
 </script>
@@ -35,11 +65,11 @@
     <div class="pl-6">
         <SlideBar {selectedTab} onTabChange={handleTabChange} />
         {#if selectedTab === "text"}
-            <TextTab text={tabText} onTextChange={handleTextChange} />
+            <TextTab text={textSummary} />
         {:else if selectedTab === "score"}
-            <ScoreTab {engagementScore} {sentimentScore} {explainabilityScore} />
+            <ScoreTab {scores} />
         {:else if selectedTab === "suggestions"}
-            <SuggestionsTab {suggestions} onSuggestionsChange={handleSuggestionsChange} />
+            <SuggestionsTab {suggestions} />
         {/if}
     </div>
 </div>

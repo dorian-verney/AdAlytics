@@ -9,11 +9,13 @@ wheels/
 *.egg-info
 
 # Virtual environments
-*.venv/
+*.adalytics-venv/
 
 # macOS-specific files
 .DS_Store
 
+
+*airflow/
 
 
 # front
@@ -42,3 +44,9 @@ wheels/
 
 # jetbrains setting folder
 *.idea/
+
+
+
+
+# FACEBOOK ADS LIBRARY API
+Facebook-Ads/

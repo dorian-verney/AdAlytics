@@ -29,6 +29,6 @@ def predict(request: InferenceRequest):
     try:
         pipe = get_pipeline(request.task)
         result = pipe(request.text, return_all_scores=True)
-        return {"task": request.task, "result": result}
+        return {"task": request.task, "scores": result, "text": "yoloooo", "suggestions": "oui je suggeste..."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
