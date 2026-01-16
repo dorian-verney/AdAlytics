@@ -35,12 +35,6 @@ class TextInputRequest(BaseModel):
 def root():
     return {"message": "Hello, World!"}
 
-
-def predict(text: str):
-    # Example: simple sentiment
-    return {"sentiment": "positive" if "good" in text.lower() else "negative"}
-
-
 @server.websocket("/api/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """
@@ -52,29 +46,46 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            # Wait for messages from this client
-            data = await websocket.receive_text()
-            message = json.loads(data)
-            print("Received message: ", message)
-            text = message.get("text", "")
-            additional_context = message.get("additional_context", "")
+            try:
+                # Wait for messages from this client
+                data = await websocket.receive_text()
+                message = json.loads(data)
+                print("Received message: ", message)
+                text = message.get("text", "")
+                additional_context = message.get("additional_context", "")
 
-            inference_request = inference_v1.InferenceRequest(
-                task="sentiment",
-                text=text
-            )
-            prediction_response = inference_v1.predict(inference_request)
-
-            
-            # Send back prediction to the same client
-            await websocket.send_text(json.dumps({
-                "prediction": prediction_response
-            }))
-            print("Sent prediction to client ", prediction_response)
+                inference_request = inference_v1.InferenceRequest(
+                    task="sentiment",
+                    text=text + " " + additional_context # TODO: change for more realistic context
+                )
+                async for task_name, result in inference_v1.predict(inference_request):
+                    print("Sending prediction to client IN ORDERRRRR", task_name)
+                    await websocket.send_text(json.dumps({
+                        "task": task_name,
+                        "result": result
+                    }))
+                    print("Sent prediction to client ", task_name, result)
+            except json.JSONDecodeError as e:
+                print(f"Error parsing JSON message: {e}")
+                await websocket.send_text(json.dumps({
+                    "error": "Invalid JSON format",
+                    "details": str(e)
+                }))
+            except Exception as e:
+                print(f"Error processing message: {e}")
+                import traceback
+                traceback.print_exc()
+                # Send error back to client but keep connection open
+                await websocket.send_text(json.dumps({
+                    "error": "Error processing request",
+                    "details": str(e)
+                }))
     except WebSocketDisconnect:
         print("WebSocket client disconnected")
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        print(f"WebSocket connection error: {e}")
+        import traceback
+        traceback.print_exc()
         try:
             await websocket.close()
         except:

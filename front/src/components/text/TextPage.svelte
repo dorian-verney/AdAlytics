@@ -1,11 +1,11 @@
 <script>
     import TextInput from './TextInput.svelte';
-    import SlideBar from './SlideBar.svelte';
+    import SlideBar from '../SlideBar.svelte';
     import TextTab from './TextTab.svelte';
-    import ScoreTab from './ScoreTab.svelte';
-    import SuggestionsTab from './SuggestionsTab.svelte';
+    import ScoreTab from '../ScoreTab.svelte';
+    import SuggestionsTab from '../SuggestionsTab.svelte';
     import { onMount, onDestroy } from 'svelte';
-    import { initWebSocket, subscribe, getWebSocketUrl } from "../utils/websockets.js";
+    import { initWebSocket, subscribe, getWebSocketUrl } from "../../utils/websockets.js";
     let unsubscribe = null;
     
     let selectedTab = "text";
@@ -40,16 +40,20 @@
 
 
     function assignPredData(predictionData) {
-        if (predictionData.prediction) {
-            let pred = predictionData.prediction;
-            if (pred.text) {
-                textSummary = pred.text;
-            }
-            if (pred.scores) {
-                scores = pred.scores;
-            }
-            if (pred.suggestions) {
-                suggestions = pred.suggestions;
+        if (predictionData.result) {
+            console.log("Received prediction data yooooo: ", predictionData);
+            let task = predictionData.task;
+            let result = predictionData.result;
+            if (task === "sentiment") {
+                // result is already an array of score objects: [{label: '...', score: 0.98}, ...]
+                if (Array.isArray(result) && result.length > 0) {
+                    sentimentScore = result[0].score;
+                    scores = result; // Also store all scores for ScoreTab
+                }
+            } else if (task === "text-generation") {
+                if (Array.isArray(result) && result.length > 0) {
+                    suggestions = result[0].generated_text;
+                }
             }
         }
     }

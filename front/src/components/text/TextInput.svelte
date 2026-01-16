@@ -1,10 +1,10 @@
 <script>
-    import Button from './Button.svelte';
+    import Button from '../Button.svelte';
     import { onMount } from 'svelte';
     let loading = false;
     let inputText = "";
     let additionalText = "";
-    import { initWebSocket, sendText, getWebSocketUrl } from "../utils/websockets.js";
+    import { initWebSocket, sendText, getWebSocketUrl } from "../../utils/websockets.js";
     
     onMount(() => {
         const wsUrl = getWebSocketUrl();

@@ -20,6 +20,8 @@ wheels/
 
 # front
 
+front/package-lock.json
+
 # build output
 *dist/
 

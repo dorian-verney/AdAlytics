@@ -35,9 +35,11 @@ export function initWebSocket(socketUrl, callback = null) {
             console.log("WebSocket disconnected");
             ws = null; // allow reconnect
             messageCallbacks.clear(); // Clear callbacks on disconnect
-            lastMessage = null; // Clear cached message on disconnect
+            lastMessage = null;
         };
         
+        
+       
         ws.onerror = (err) => {
             console.error("WebSocket error:", err);
         };
@@ -119,6 +121,46 @@ export function sendText(inputText, additionalContext = "") {
     }));
 }
 
+// FOR TOKEN STREAMING
+// /**
+//  * Send a text generation request with streaming tokens
+//  * @param {string} prompt - The prompt text
+//  * @param {number} maxNewTokens - Maximum number of tokens to generate (default: 50)
+//  * @param {Function} onToken - Callback called for each token received
+//  * @param {Function} onStart - Callback called when streaming starts
+//  * @param {Function} onEnd - Callback called when streaming ends
+//  */
+// export function sendTextGenerationStream(prompt, maxNewTokens = 50, onToken = null, onStart = null, onEnd = null) {
+//     if (!ws || ws.readyState !== WebSocket.OPEN) {
+//         console.error("Can't Send Text: WebSocket not connected");
+//         return;
+//     }
+    
+//     // Set up a temporary callback to handle streaming messages
+//     const streamCallback = (data) => {
+//         if (data.type === "stream_start") {
+//             if (onStart) onStart(data);
+//         } else if (data.type === "token") {
+//             if (onToken) onToken(data.token);
+//         } else if (data.type === "stream_end") {
+//             if (onEnd) onEnd(data);
+//             // Unsubscribe after streaming ends
+//             unsubscribe(streamCallback);
+//         }
+//     };
+    
+//     // Subscribe to handle streaming messages
+//     subscribe(streamCallback, false);
+    
+//     // Send the streaming request
+//     ws.send(JSON.stringify({
+//         text: prompt,
+//         type: "text-generation",
+//         stream: true,
+//         max_new_tokens: maxNewTokens
+//     }));
+// }
+
 // --------------------------------------------------------------
 // Utility to determine the correct WebSocket URL based on environment
 // --------------------------------------------------------------
@@ -130,14 +172,17 @@ export function getWebSocketUrl() {
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
+    const port = window.location.port;
 
-    // If running on localhost with a port (likely local dev), use port 8000 for backend
+    // If running on localhost
     if (host.includes('localhost') || host.includes('127.0.0.1')) {
-        // Check if we're accessing through a specific port (like 4321 for frontend)
-        // In local dev, backend is typically on 8000
-        if (host.includes(':4321') || host.includes(':3000') || host.includes(':5173')) {
-            return 'ws://localhost:8000';
+        // If accessing through port 80 (Traefik/Docker), use same host
+        if (port === '80' || port === '' || !port) {
+            return `${protocol}//${host.split(':')[0]}`;
         }
+        // For local dev (frontend on dev port), try direct backend connection on 8000
+        // This assumes backend is running locally or Docker port 8000 is exposed
+        return 'ws://localhost:8000';
     }
     // For Docker/production, use the same host but with ws protocol
     return `${protocol}//${host}`;
