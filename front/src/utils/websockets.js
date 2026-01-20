@@ -82,10 +82,7 @@ export function subscribe(callback, receiveLastMessage = true) {
     return () => unsubscribe(callback);
 }
 
-/**
- * Get the last received message without subscribing
- * @returns {Object|null} The last message received, or null if none
- */
+// get the last received message without subscribing
 export function getLastMessage() {
     return lastMessage;
 }
@@ -106,7 +103,6 @@ export function getWebSocketMessageCallback(callback = null) {
     }
 }
 
-
 // Send text to backend for prediction
 // TODO: sometimes, it is not inputText, additionalContext
 // insert in args a custom class corresponding to type of data to send
@@ -120,46 +116,6 @@ export function sendText(inputText, additionalContext = "") {
         additional_context: additionalContext
     }));
 }
-
-// FOR TOKEN STREAMING
-// /**
-//  * Send a text generation request with streaming tokens
-//  * @param {string} prompt - The prompt text
-//  * @param {number} maxNewTokens - Maximum number of tokens to generate (default: 50)
-//  * @param {Function} onToken - Callback called for each token received
-//  * @param {Function} onStart - Callback called when streaming starts
-//  * @param {Function} onEnd - Callback called when streaming ends
-//  */
-// export function sendTextGenerationStream(prompt, maxNewTokens = 50, onToken = null, onStart = null, onEnd = null) {
-//     if (!ws || ws.readyState !== WebSocket.OPEN) {
-//         console.error("Can't Send Text: WebSocket not connected");
-//         return;
-//     }
-    
-//     // Set up a temporary callback to handle streaming messages
-//     const streamCallback = (data) => {
-//         if (data.type === "stream_start") {
-//             if (onStart) onStart(data);
-//         } else if (data.type === "token") {
-//             if (onToken) onToken(data.token);
-//         } else if (data.type === "stream_end") {
-//             if (onEnd) onEnd(data);
-//             // Unsubscribe after streaming ends
-//             unsubscribe(streamCallback);
-//         }
-//     };
-    
-//     // Subscribe to handle streaming messages
-//     subscribe(streamCallback, false);
-    
-//     // Send the streaming request
-//     ws.send(JSON.stringify({
-//         text: prompt,
-//         type: "text-generation",
-//         stream: true,
-//         max_new_tokens: maxNewTokens
-//     }));
-// }
 
 // --------------------------------------------------------------
 // Utility to determine the correct WebSocket URL based on environment

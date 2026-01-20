@@ -58,23 +58,10 @@ def root():
     return {"message": "Hello, everything is working!"}
 
 
-def evaluate_ad(request: AdRequest) -> dict:
-    """
-    Evaluate the ad and return the scores and feedback
-    """
-    main_text = request.main_text
-    additional_context = request.additional_context # TODO incorporate into context
-    query_emb = embed([main_text])[0].tolist()
-    results = retrieve(collection, query_emb)
-    context = build_context(results)
-    scores = score_ad(llm, main_text, context)
-    feedback = improve_ad(llm, main_text, scores, context)
-    return {"scores": scores, "feedback": feedback}
-
-
 def get_context(main_text: str) -> str:
     """
-    Get the context for the ad
+    Get the context for the ad by embedding the main text and 
+    retrieving the most relevant chunks
     """
     query_emb = embed([main_text])[0].tolist()
     results = retrieve(collection, query_emb)
@@ -132,6 +119,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 message = json.loads(data)
 
                 main_text = message.get("main_text", "")
+                # TODO incorporate into context
                 additional_context = message.get("additional_context", "")
 
                 context = get_context(main_text)

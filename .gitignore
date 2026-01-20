@@ -1,5 +1,7 @@
 # back
 
+back/.env
+
 # Python-generated files
 **__pycache__/
 *.py[oc]
@@ -19,8 +21,8 @@ wheels/
 
 
 # front
-
-front/package-lock.json
+*.vscode/
+*package-lock.json
 
 # build output
 *dist/

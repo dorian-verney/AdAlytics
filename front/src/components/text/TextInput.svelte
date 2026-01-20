@@ -1,10 +1,12 @@
 <script>
     import Button from '../Button.svelte';
-    import { onMount } from 'svelte';
+    import { onMount, createEventDispatcher } from 'svelte';
     let loading = false;
     let inputText = "";
     let additionalText = "";
     import { initWebSocket, sendText, getWebSocketUrl } from "../../utils/websockets.js";
+    
+    const dispatch = createEventDispatcher();
     
     onMount(() => {
         const wsUrl = getWebSocketUrl();
@@ -17,6 +19,8 @@
     function handleClickWs() {
         console.log("Sending text to server", inputText);
         sendText(inputText, additionalText);
+        // Emit event to parent to trigger slide animation
+        dispatch('inspect-clicked');
     }
 
 </script>
@@ -33,7 +37,7 @@
             class="w-1/2 px-6 py-5 rounded-lg border-2 border-gray-400 
                    bg-white shadow-lg focus:outline-none focus:ring-1 
                    focus:ring-gray-800 focus:border-gray-800 text-lg 
-                   resize-y h-20 min-h-20"
+                   resize-y h-20 min-h-20 "
         ></textarea>
         <textarea
             bind:value={additionalText}
