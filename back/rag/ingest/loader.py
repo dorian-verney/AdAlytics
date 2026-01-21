@@ -1,4 +1,6 @@
 from pypdf import PdfReader
+from config.config import DATA_PATH
+import os
 
 def load_pdf(path: str) -> list[str]:
     reader = PdfReader(path)
@@ -15,7 +17,7 @@ def load_md(path: str) -> str:
 
 
 if __name__ == "__main__":
-    pages = load_pdf("data/ad.pdf")
+    pages = load_pdf(os.path.join(DATA_PATH, "shampoo-ad.pdf"))
     print(pages)
-    # md = load_md("data/ad.md")
-    # print(md)
+    # # md = load_md("data/ad.md")
+    # # print(md)

@@ -1,4 +1,3 @@
-### How to run:
+## Welcome Page
 
-back: fastapi dev main.py (need to install fastapi[standard])
-front: npm run dev
+![Main Page](./imgs/main_page.png)

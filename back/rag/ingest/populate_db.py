@@ -8,7 +8,7 @@ from rag.rag_core.vector_store import add_chunks
 
 
 def populate_vector_store():
-    pdf_name = "ad.pdf"
+    pdf_name = "shampoo-ad.pdf"
     pages = load_pdf(os.path.join(DATA_PATH, pdf_name))
     full_text = "\n\n".join(pages)
     chunks = chunk_text(full_text)

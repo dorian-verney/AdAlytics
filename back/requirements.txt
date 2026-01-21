@@ -1,6 +1,10 @@
+torch==2.6.0
+python-dotenv
 fastapi
 uvicorn[standard]
 pydantic
 transformers
-torch==2.6.0+cpu
-python-dotenv
+llama-cpp-python
+sentence-transformers
+chromadb
+pypdf
