@@ -1,32 +1,10 @@
-from rag.utils import process_generated_text
+from back.src.utils import process_generated_text
 from llama_cpp import Llama
 from typing import Generator
+from back.src.prompts.prompts import improve_prompt
 
 def improve_ad(llm: Llama, ad_text: str, scores: str, context: str) -> Generator[str, int]:
-    prompt = f"""
-                You are a marketing consultant.
-                Use the context and scores to improve the ad:
-                1. Suggest 3 improvements as suggestions
-                2. Rewrite the ad as a new_ad
-                Return JSON.
-
-                Context:
-                {context}
-
-                Scores:
-                {scores}
-
-                Ad:
-                {ad_text}
-
-                Output format:
-                {{
-                    "suggestions": ["...", "...", "..."],
-                    "new_ad": "..."
-                }}
-                
-
-                """
+    prompt = improve_prompt(context, ad_text, scores)
 
     max_tokens = 500
     output = llm(

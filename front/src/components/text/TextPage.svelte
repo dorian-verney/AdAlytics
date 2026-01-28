@@ -15,25 +15,24 @@
     
 </script>
 
-<div class="w-full">
-    <h1 class="w-full mb-10 text-xl sm:text-2xl md:text-5xl font-bold">
-        <span class="underline underline-offset-12px">Text ad</span> analysis.
-    </h1>
-    
-    <div class="flex w-full gap-4">
-        <!-- Left side: TextInput -->
-        <div 
-            class="mt-24 overflow-hidden px-8 {isInspected ? 'w-1/2' : 'w-full'}"
-            style="transition: width {duration_fade}ms ease-in-out;"
-        >
+<div class="w-full flex">
+    <!-- Left side: Title + TextInput -->
+    <div 
+        class="overflow-hidden {isInspected ? 'w-1/2' : 'w-full'}"
+        style="transition: width {duration_fade}ms ease-in-out;"
+    >
+        <h1 class="mb-20 text-3xl sm:text-5xl md:text-7xl font-bold">
+            <span class="underline underline-offset-[24px]">Text </span> ad analysis.
+        </h1>
+        <div class="mt-4 px-8">
             <TextInput on:inspect-clicked={handleInspectClicked} />
         </div>
-        
-        <!-- Right side: Chart (only visible after slide animation completes) -->
-        {#if showChart}
-            <AnalysisChart duration_fade={duration_fade} />
-        {/if}
     </div>
-    
- 
+
+    <!-- Right side: Chart (only visible after slide animation completes) -->
+    {#if showChart}
+        <div class="w-1/2">
+            <AnalysisChart duration_fade={duration_fade} />
+        </div>
+    {/if}
 </div>

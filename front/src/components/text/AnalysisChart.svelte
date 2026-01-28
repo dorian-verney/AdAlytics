@@ -129,7 +129,7 @@
 </script>
 
 
-<div class="w-1/2 px-24 flex-shrink-0" transition:fade={{ duration: duration_fade/2 }}>
+<div class="w-full px-8 flex-shrink-0" transition:fade={{ duration: duration_fade/2 }}>
     <div class="h-full bg-white rounded-lg border-2 border-gray-300 shadow-lg p-6 flex flex-col">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Analysis Chart</h2>
         

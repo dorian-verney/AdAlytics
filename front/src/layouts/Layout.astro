@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Header from '../components/Header.svelte';
 ---
 
 <!doctype html>
@@ -12,7 +13,11 @@ import '../styles/global.css';
 		<title>AdAlytics</title>
 	</head>
 	<body>
-		<slot />
+		<Header client:load/>
+		<div class="min-h-screen bg-linear-to-b from-purple-200/30
+              to-purple-50/30 p-6 md:p-12 text-gray-800">
+			<slot />
+		</div>
 	</body>
 </html>
 

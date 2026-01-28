@@ -34,7 +34,7 @@
         <textarea
             bind:value={inputText}
             placeholder="Write your ad text here..."
-            class="w-1/2 px-6 py-5 rounded-lg border-2 border-gray-400 
+            class="w-1/2 min-w-3/4 px-6 py-5 rounded-lg border-2 border-gray-400 
                    bg-white shadow-lg focus:outline-none focus:ring-1 
                    focus:ring-gray-800 focus:border-gray-800 text-lg 
                    resize-y h-20 min-h-20 "
@@ -42,7 +42,7 @@
         <textarea
             bind:value={additionalText}
             placeholder="Provide additional context..."
-            class="w-1/2 px-4 py-4 rounded-md border border-gray-300 
+            class="w-1/2 min-w-3/4 px-4 py-4 rounded-md border border-gray-300 
                    focus:outline-none focus:ring-2 focus:ring-gray-800
                    focus:border-transparent text-sm resize-y h-16 min-h-16"
         ></textarea>

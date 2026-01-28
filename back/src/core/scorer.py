@@ -1,28 +1,11 @@
-from rag.utils import  process_generated_text
+from back.src.utils import  process_generated_text
 from llama_cpp import Llama
 from typing import Generator
+from back.src.prompts.prompts import score_prompt
 
 def score_ad(llm: Llama, ad_text: str, context: str) -> Generator[str, int]:
-    prompt = f"""
-                You are an expert ad evaluator.
-                Use ONLY the context.
-                Return JSON. 
-
-                Context:
-                {context}
-
-                Ad:
-                {ad_text}
-
-                Output format:
-                {{
-                    "clarity": "0-10",
-                    "brand_alignment": "0-10",
-                    "compliance": "0-10",
-                    "conversion": "0-10",
-                    "justification": "..."
-                }}
-                """
+    prompt = score_prompt(context, ad_text)
+    
     print("longueur du prompt = ", len(prompt))
     max_tokens = 200
     output = llm(
