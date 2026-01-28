@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .deps import redis_cache, get_async_session
+from .services import Services
 from .database.schemas import User, UserOut
 
 router = APIRouter()
@@ -56,3 +57,14 @@ async def login(
     user: User, db_session: AsyncSession = Depends(get_async_session)
 ) -> dict:
     return await redis_cache.login(user, db_session)
+
+
+
+
+@router.websocket("/api/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket endpoint that handles bidirectional communication.
+    Clients send messages and receive predictions on the same connection.
+    """
+    await Services.websocket_endpoint(websocket)
