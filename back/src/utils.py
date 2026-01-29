@@ -1,6 +1,14 @@
 import re
 import json
+def clean_generated_text(generated_text: str, prompt: str) -> str:
+    if generated_text.startswith(prompt):
+        generated_text = generated_text[len(prompt):].strip()
+        
+    if generated_text.startswith('```'):
+        generated_text = re.sub(r'```(?:json)?\s*', '', generated_text, count=1)
+        generated_text = re.sub(r'```\s*$', '', generated_text)
 
+    return generated_text
 
 def process_generated_text(generated_text: str, prompt: str) -> str:
     # Remove the prompt from the beginning, return only the generated part
@@ -29,3 +37,12 @@ def process_generated_text(generated_text: str, prompt: str) -> str:
     
     # If all attempts fail, return error
     return {"error": "Failed to parse JSON", "raw_output": generated_text}
+
+
+def process_llm_output(output: dict, prompt: str) -> dict:
+    """
+    Same parsing as process_generated_text, but input is one LLM output dict
+    (e.g. {"choices": [{"text": "..."}]}). Returns a single parsed JSON result.
+    """
+    text = output.get("choices", [{}])[0].get("text", "")
+    return process_generated_text(text, prompt)

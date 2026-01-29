@@ -1,8 +1,8 @@
 import os
 
-from config.config import DATA_PATH
+from back.config.config import DATA_PATH
 from .loader import load_pdf
-from preprocessing.chunker import chunk_text
+from back.src.preprocessing.chunker import chunk_text
 from .embedder import embed
 from .vector_store import add_chunks
 

@@ -1,5 +1,5 @@
 from pypdf import PdfReader
-from config.config import DATA_PATH
+from back.config.config import DATA_PATH
 import os
 
 def load_pdf(path: str) -> list[str]:
