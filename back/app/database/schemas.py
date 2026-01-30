@@ -6,3 +6,7 @@ class User(BaseModel):
 
 class UserOut(User):
     id: int
+
+class TextEntry(BaseModel):
+    main_text: str
+    additional_context: str

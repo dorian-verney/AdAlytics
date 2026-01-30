@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import multiprocessing
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -8,10 +9,12 @@ load_dotenv()
 DATA_PATH = Path(__file__).parent.parent / "data"
 
 # Model configuration from environment variables
+# n_threads: CPU threads per model for inference (uses multiple cores via llama.cpp)
+_default_threads = max(1, multiprocessing.cpu_count() - 1)
 MODEL_CONFIG = {
     "model_path": os.getenv("MODEL_PATH"),
-    "n_ctx": 4096
-    # "n_threads": 8
+    "n_ctx": 4096,
+    "n_threads": int(os.getenv("N_THREADS", _default_threads)),
 }
 
 MODEL_ROUTING = {

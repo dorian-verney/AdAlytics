@@ -9,18 +9,18 @@ from back.src.utils import process_llm_output
 from back.src.rag.populate_db import ensure_vector_store_populated
 from back.src.prompts.prompts import score_prompt, improve_prompt
 
+from back.app.database.schemas import TextEntry
+
 class Pipeline:
     def __init__(self, scorer_llm, critic_llm):
         self.scorer_llm = scorer_llm
         self.critic_llm = critic_llm
-        self.main_text = None
-        self.additional_context = None
+        self.text_entry: TextEntry = None
 
         ensure_vector_store_populated(collection)
 
-    def ingest(self, main_text: str, additional_context: str):
-        self.main_text = main_text
-        self.additional_context = additional_context
+    def ingest(self, text_entry: TextEntry):
+        self.text_entry = text_entry
 
 
     def build_context(self):
@@ -33,7 +33,6 @@ class Pipeline:
         context = self.build_context()
         # Scorer: predict (non-streaming) -> raw dict
         prompt_scorer = score_prompt(context, self.main_text)
-        time_start = time.time()
         out = self.scorer_llm.predict(prompt_scorer)
         # Critic: predict (non-streaming)
         out = next(out)
@@ -45,5 +44,4 @@ class Pipeline:
         out2 = next(out2)
         out2 = process_llm_output(out2, prompt_critic)
         yield json.dumps({"stage": "critic", "result": out2})
-        time_end = time.time()
-        print(f"Time taken: {time_end - time_start} seconds")
+    

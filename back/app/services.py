@@ -1,4 +1,4 @@
-from .database.schemas import User, UserOut
+from .database.schemas import User, UserOut, TextEntry
 from .database.models import UserTable
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
@@ -7,16 +7,13 @@ from typing import Any
 from fastapi import WebSocket, WebSocketDisconnect
 import json
 import asyncio
-from typing import Generator
+import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
 from back.config.config import MODEL_CONFIG
-from back.src.rag.embedder import embed
-from back.src.rag.retriever import retrieve
-from back.src.rag.indexer import build_context
-from back.src.rag.vector_store import collection
 
 from back.src.core.pipeline import Pipeline
 from back.src.core.local_llm import ScorerV1, CriticV1
-from llama_cpp import Llama
+import time
 
 scorer_llm = ScorerV1(**MODEL_CONFIG)
 scorer_llm.load()
@@ -25,6 +22,11 @@ critic_llm = CriticV1(**MODEL_CONFIG)
 critic_llm.load()
 
 pipeline = Pipeline(scorer_llm, critic_llm)
+
+_inference_executor = ThreadPoolExecutor(
+    max_workers=max(2, multiprocessing.cpu_count() - 1)
+)
+
 
 def db_obj_to_dict(obj: Any) -> dict:
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
@@ -133,11 +135,20 @@ class Services:
                     data = await websocket.receive_text()
                     message = json.loads(data)
 
-                    main_text = message.get("main_text", "")
-                    additional_context = message.get("additional_context", "")
+                    text_entry = TextEntry(**message)
 
-                    pipeline.ingest(main_text, additional_context)
-                    for out in pipeline.run():
+                    def run_pipeline():
+                        pipeline.ingest(text_entry)
+                        return list(pipeline.run())
+
+                    time_start = time.time()
+                    loop = asyncio.get_event_loop()
+                    results = await loop.run_in_executor(
+                        _inference_executor, run_pipeline
+                    )
+                    time_end = time.time()
+                    print(f"Time taken: {time_end - time_start} seconds")
+                    for out in results:
                         print("Out: ", out)
                         await websocket.send_text(out)
 
